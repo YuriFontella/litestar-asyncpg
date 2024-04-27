@@ -1,0 +1,4 @@
+litestar[standard]
+litestar-asyncpg
+asyncpg
+python-dotenv
