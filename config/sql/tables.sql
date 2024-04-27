@@ -2,7 +2,7 @@ CREATE TABLE players
 (
     id SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL UNIQUE,
-    status BOOl DEFAULT FALSE
+    status BOOL DEFAULT FALSE
 )
 
 CREATE TABLE solicitations
