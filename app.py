@@ -1,6 +1,6 @@
 from litestar import Litestar
 
-from config.plugin import asyncpg
+from config.plugin.main import asyncpg
 from src.middleware.factory import middleware_factory
 from src.middleware.lifespan import lifespan
 
