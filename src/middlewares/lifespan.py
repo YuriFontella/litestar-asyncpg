@@ -1,5 +1,4 @@
 from litestar import Litestar
-
 from config.plugin.asyncpg import config
 
 
