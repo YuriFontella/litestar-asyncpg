@@ -1,4 +1,7 @@
 litestar[standard]
 litestar-asyncpg
 asyncpg
+msgspec
 python-dotenv
+pyjwt
+bcrypt
