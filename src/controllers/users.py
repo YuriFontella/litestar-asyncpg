@@ -14,9 +14,9 @@ async def create_user(data: User, db_connection: Connection) -> bool:
     print(msgspec.convert(user, type=User))
 
     query = """
-        SELECT email
-        FROM users
-        WHERE email = $1
+        select email
+        from users
+        where email = $1
     """
     record = await db_connection.fetchrow(query, data.email)
 
