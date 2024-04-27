@@ -26,6 +26,7 @@ app = Litestar(
     middleware=[factory, rate_limit_config.middleware],
     on_startup=[on_startup],
     on_shutdown=[on_shutdown],
+    pdb_on_exception=False,
     exception_handlers={
         HTTPException: app_exception_handler,
         HTTP_500_INTERNAL_SERVER_ERROR: internal_server_error_handler
