@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 #### Database
 
-```sql
+```bash
 create database db 
 ```
 
