@@ -4,6 +4,9 @@ from litestar.middleware import AbstractAuthenticationMiddleware, Authentication
 from litestar.exceptions import NotAuthorizedException
 from litestar.connection import ASGIConnection
 
+from settings import key
+from config.plugin.asyncpg import config
+
 
 class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
     async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
@@ -12,9 +15,13 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
             if not token:
                 raise NotAuthorizedException()
 
-            auth = decode(jwt=token, key='!!$$dev$$00', algorithms=["HS256"])
-
+            auth = decode(jwt=token, key=key, algorithms=["HS256"])
             user = auth.get('id')
+
+            # pool = config.provide_pool(connection.state)
+            # async with pool.acquire() as conn:
+            #     user = await conn.fetchrow('select name, email from users where id = $1', user)
+
             if not user:
                 raise NotAuthorizedException()
 

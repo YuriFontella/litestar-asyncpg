@@ -10,11 +10,11 @@ from src.middlewares.factory import factory
 from src.middlewares.lifespan import on_startup, on_shutdown
 from src.middlewares.utils import cors_config, csrf_config, compression_config, rate_limit_config
 
-from src.controllers import players, users, root
+from src.controllers import teams, users, root
 
 app = Litestar(
     route_handlers=[
-        players.router,
+        teams.router,
         users.router,
         root.router,
         create_static_files_router(path='/public', directories=['public'], send_as_attachment=True)

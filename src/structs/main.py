@@ -6,26 +6,34 @@ from msgspec import Struct
 
 class User(Struct, kw_only=True, omit_defaults=True):
     id: Optional[int] = None
-    name: str
+    name: Optional[str] = None
     email: str
     password: str
     role: Optional[str] = None
     status: Optional[bool] = None
 
 
-class Players(Struct, kw_only=True, omit_defaults=True):
-    id: Optional[int] = None
-    name: str
-    user: Optional[str] = None
-    language: Optional[str] = None
-    uuid: Optional[str] = None
-    status: Optional[bool] = None
-
-
 class Teams(Struct, kw_only=True, omit_defaults=True):
     id: Optional[int] = None
     name: str
-    value: Decimal
-    player_id: Optional[int] = None
+    price: Decimal
+    owner: Optional[str] = None
     protocol: Optional[int] = None
     date: Optional[datetime] = None
+
+
+class Players(Struct, kw_only=True, omit_defaults=True):
+    id: Optional[int] = None
+    name: str
+    language: Optional[str] = None
+    uuid: Optional[str] = None
+    status: Optional[bool] = None
+    team_id: Optional[int] = None
+
+
+class TeamsPlayers(Teams):
+    players: list[Players]
+
+
+class Token(Struct):
+    token: str
