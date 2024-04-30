@@ -3,6 +3,7 @@ import bcrypt
 import jwt
 
 from litestar import Router, post
+from litestar.channels import ChannelsPlugin
 from litestar.exceptions import HTTPException
 from asyncpg import Connection
 
@@ -11,7 +12,7 @@ from src.structs.main import User, Token
 
 
 @post(path='/register')
-async def create_user(data: User, db_connection: Connection) -> bool:
+async def create_user(data: User, db_connection: Connection, channels: ChannelsPlugin) -> bool:
     user = msgspec.to_builtins(data)
     print(user)
     print(msgspec.convert(user, type=User))
@@ -29,14 +30,17 @@ async def create_user(data: User, db_connection: Connection) -> bool:
     password = bcrypt.hashpw(data.password.encode('utf-8'), bcrypt.gensalt(10))
 
     query = """
-        insert into users (name, email, password) values ($1, $2, $3)
+        insert into users (name, email, password) values ($1, $2, $3) returning id
     """
-    await db_connection.execute(
+    user = await db_connection.execute(
         query,
         data.name,
         data.email,
         password.decode('utf-8')
     )
+
+    if user:
+        channels.publish('Usuário criado com sucesso!', channels=['notifications'])
 
     return True
 

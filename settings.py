@@ -3,5 +3,5 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-key = '!$dev$0'
+key = os.getenv('KEY')
 dsn = os.getenv('DSN')

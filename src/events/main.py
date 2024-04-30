@@ -2,7 +2,7 @@ import asyncio
 from litestar.events import listener
 
 
-@listener('send_email')
-async def on_listener(email: str) -> None:
+@listener('messages')
+async def on_listener(text: str) -> None:
     await asyncio.sleep(10)
-    print(email)
+    print(text)

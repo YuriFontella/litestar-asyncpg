@@ -31,5 +31,4 @@ cors_config = CORSConfig(
 
 compression_config = CompressionConfig(backend='gzip', gzip_compress_level=9)
 
-rate_limit_config = RateLimitConfig(rate_limit=('minute', 120), exclude=['/schema'])
-
+rate_limit_config = RateLimitConfig(rate_limit=('day', 100000), exclude=['/schema'])
