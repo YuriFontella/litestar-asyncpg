@@ -16,11 +16,11 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
                 raise NotAuthorizedException()
 
             auth = decode(jwt=token, key=key, algorithms=["HS256"])
-            user = auth.get('id')
+            id = auth.get('id')
 
-            # pool = config.provide_pool(connection.state)
-            # async with pool.acquire() as conn:
-            #     user = await conn.fetchrow('select name, email from users where id = $1', user)
+            pool = config.provide_pool(connection.scope['app'].state)
+            async with pool.acquire() as conn:
+                user = await conn.fetchrow('select id, name, email, role, status from users where id = $1', id)
 
             if not user:
                 raise NotAuthorizedException()

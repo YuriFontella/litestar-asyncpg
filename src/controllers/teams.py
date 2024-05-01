@@ -12,8 +12,6 @@ from src.structs.main import TeamsPlayers
 async def post_players(data: TeamsPlayers, db_connection: Connection, scope: Scope, request: Request) -> bool:
     async with db_connection.transaction():
         user = scope.get('user')
-        user = await db_connection.fetchrow('select name from users where id = $1', user)
-
         protocol = random.randint(111111, 999999)
 
         query = '''

@@ -6,6 +6,7 @@ from litestar.static_files import create_static_files_router
 from config.plugin.asyncpg import asyncpg
 from config.exception.main import app_exception_handler, internal_server_error_handler
 
+from src.events.main import on_listener
 from src.middlewares.factory import factory
 from src.middlewares.lifespan import on_startup, on_shutdown
 from src.middlewares.utils import cors_config, csrf_config, compression_config, rate_limit_config
@@ -24,6 +25,7 @@ app = Litestar(
     csrf_config=csrf_config,
     compression_config=compression_config,
     middleware=[factory, rate_limit_config.middleware],
+    listeners=[on_listener],
     on_startup=[on_startup],
     on_shutdown=[on_shutdown],
     pdb_on_exception=False,
