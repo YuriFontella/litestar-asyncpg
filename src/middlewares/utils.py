@@ -3,6 +3,8 @@ from litestar.config.csrf import CSRFConfig
 from litestar.config.compression import CompressionConfig
 from litestar.middleware.rate_limit import RateLimitConfig
 
+from typing import Literal, Tuple
+
 csrf_config = CSRFConfig(
     secret=str('SECRET_KEY'),
     safe_methods={
@@ -31,4 +33,5 @@ cors_config = CORSConfig(
 
 compression_config = CompressionConfig(backend='gzip', gzip_compress_level=9)
 
-rate_limit_config = RateLimitConfig(rate_limit=('day', 100000), exclude=['/schema'])
+rate_limit: Tuple[Literal['second'], int] = ('second', 10)
+rate_limit_config = RateLimitConfig(rate_limit=rate_limit, exclude=['/schema'])

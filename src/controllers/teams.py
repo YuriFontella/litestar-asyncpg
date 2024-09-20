@@ -6,9 +6,10 @@ from asyncpg import Connection
 
 from src.middlewares.auth import AuthenticationMiddleware
 from src.structs.main import TeamsPlayers
+from src.guards.main import route_guards
 
 
-@post(path='/players')
+@post(path='/players', guards=[route_guards])
 async def post_players(data: TeamsPlayers, db_connection: Connection, scope: Scope, request: Request) -> bool:
     async with db_connection.transaction():
         user = scope.get('user')

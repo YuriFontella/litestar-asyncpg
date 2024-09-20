@@ -1,3 +1,5 @@
+import hashlib
+
 from jwt import PyJWTError, decode
 
 from litestar.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
@@ -16,11 +18,23 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
                 raise NotAuthorizedException()
 
             auth = decode(jwt=token, key=key, algorithms=["HS256"])
-            id = auth.get('id')
+            salt = 'xYzDeV@0000'
+            access_token = hashlib.pbkdf2_hmac('sha256', auth['access_token'].encode(), salt.encode(), 1000)
+            user_id = auth.get('id')
 
             pool = config.provide_pool(connection.scope['app'].state)
             async with pool.acquire() as conn:
-                user = await conn.fetchrow('select id, name, email, role, status from users where id = $1', id)
+                query = """
+                    select u.id, u.name, u.email, u.role, u.status 
+                    from users u 
+                    join sessions s on u.id = s.user_id
+                    where 
+                        u.id = $1 and
+                        s.access_token = $2 and
+                        s.revoked = false and
+                        u.status = true
+                """
+                user = await conn.fetchrow(query, user_id, access_token.hex())
 
             if not user:
                 raise NotAuthorizedException()

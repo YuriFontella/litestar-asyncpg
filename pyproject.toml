@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "litestar-asyncpg-api"
+version = "0.1.0"
+description = ""
+authors = ["Yuri Fontella <yurifc4@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+litestar = {extras = ["standard"], version = "^2.11.0"}
+litestar-asyncpg = "^0.2.0"
+pyjwt = "^2.9.0"
+bcrypt = "^4.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

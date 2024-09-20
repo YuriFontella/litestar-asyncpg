@@ -12,13 +12,14 @@ from src.middlewares.factory import factory
 from src.middlewares.lifespan import on_startup, on_shutdown
 from src.middlewares.utils import cors_config, csrf_config, compression_config, rate_limit_config
 
-from src.controllers import teams, users, root
+from src.controllers import root, teams, users, auth
 
 app = Litestar(
     route_handlers=[
+        root.router,
         teams.router,
         users.router,
-        root.router,
+        auth.router,
         create_static_files_router(path='/public', directories=['public'], send_as_attachment=True)
     ],
     plugins=[asyncpg, channels_plugin],
