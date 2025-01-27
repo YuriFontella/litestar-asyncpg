@@ -7,9 +7,9 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.12"
-litestar = {extras = ["standard"], version = "^2.12.1"}
-litestar-asyncpg = "^0.2.0"
+python = "^3.13"
+litestar = {extras = ["standard"], version = "^2.14.0"}
+litestar-asyncpg = "^0.3.0"
 pyjwt = "^2.9.0"
 bcrypt = "^4.2.0"
 python-dotenv = "^1.0.1"
