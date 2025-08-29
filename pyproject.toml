@@ -9,10 +9,11 @@ package-mode = false
 [tool.poetry.dependencies]
 python = "^3.13"
 litestar = {extras = ["standard"], version = "^2.16.0"}
-litestar-asyncpg = "^0.3.0"
+litestar-asyncpg = "^0.5.0"
 pyjwt = "^2.10.1"
 bcrypt = "^4.3.0"
 python-dotenv = "^1.1.0"
+dependency-injector = "^4.48.1"
 
 
 [build-system]

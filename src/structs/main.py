@@ -1,39 +1,10 @@
-from typing import Optional
-from datetime import datetime
-from decimal import Decimal
-from msgspec import Struct
+# Este arquivo agora importa as entidades comuns para manter compatibilidade
+# com o código existente que usa estas classes
+
+from src.domain.entities.common import User, Team as Teams, Player as Players, Token
 
 
-class User(Struct, kw_only=True, omit_defaults=True):
-    id: Optional[int] = None
-    name: Optional[str] = None
-    email: str
-    password: str
-    role: Optional[str] = None
-    status: Optional[bool] = None
-
-
-class Teams(Struct, kw_only=True, omit_defaults=True):
-    id: Optional[int] = None
-    name: str
-    price: Decimal
-    owner: Optional[str] = None
-    protocol: Optional[int] = None
-    date: Optional[datetime] = None
-
-
-class Players(Struct, kw_only=True, omit_defaults=True):
-    id: Optional[int] = None
-    name: str
-    language: Optional[str] = None
-    uuid: Optional[str] = None
-    status: Optional[bool] = None
-    team_id: Optional[int] = None
-
-
+# Classe de compatibilidade para manter a API existente
 class TeamsPlayers(Teams):
+    """Classe de compatibilidade para TeamsPlayers."""
     players: list[Players]
-
-
-class Token(Struct):
-    token: str
