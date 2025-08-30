@@ -17,7 +17,7 @@ Principais caminhos:
 - Routes: `src/presentation/routes/*.py`
 - Middlewares / Channels / Events: `src/presentation/middlewares|channels|events`
 - Infra DB config (asyncpg): `src/infrastructure/database/asyncpg.py`
-- Infra SQL: `src/infrastructure/database/sql/tables.sql`
+- Infra SQL (referência): `src/infrastructure/database/sql/tables.sql` (não é necessário executar manualmente)
 
 Dependências (principais):
 
@@ -47,22 +47,47 @@ CHANNELS=notifications
 CHANNELS_CREATE_WS=true
 ```
 
-2) Banco
+2) Banco (PostgreSQL)
+
+- Criar usuário e banco (psql):
 
 ```sql
--- criar o banco antes de executar a aplicação
-create database db;
+-- conectar como superusuário (ex.: postgres)
+CREATE ROLE app_user WITH LOGIN PASSWORD 'app_password';
+CREATE DATABASE app_db OWNER app_user;
+GRANT ALL PRIVILEGES ON DATABASE app_db TO app_user;
+```
+
+- Ativar extensão necessária no banco:
+
+```sql
+-- dentro do banco app_db
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
+- Atualizar a `DSN` no `.env` para o banco criado:
+
+```
+DSN=postgresql://app_user:app_password@localhost:5432/app_db
+```
+
+- Criação automática de tabelas: ao iniciar a API, as tabelas são criadas automaticamente.
+
+- Opcional (Docker): subir um Postgres rapidamente:
+
+```bash
+docker run --name pg \
+  -e POSTGRES_USER=app_user \
+  -e POSTGRES_PASSWORD=app_password \
+  -e POSTGRES_DB=app_db \
+  -p 5432:5432 -d postgres:16
+# não é necessário rodar SQL manualmente; ao iniciar a API as tabelas serão criadas
 ```
 
 3) Configurações
 
 - Classe de configuração: `src/core/config/settings.py` expõe `settings.key` e `settings.dsn` (carregados do `.env`).
 
-4) Rodar o servidor
-
-```bash
-litestar run
-```
 
 Como iniciar (Poetry)
 
