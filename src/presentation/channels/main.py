@@ -6,3 +6,4 @@ channels_plugin = ChannelsPlugin(
     channels=['notifications'],
     create_ws_route_handlers=True
 )
+

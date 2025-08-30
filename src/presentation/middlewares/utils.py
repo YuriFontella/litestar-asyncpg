@@ -35,3 +35,4 @@ compression_config = CompressionConfig(backend='gzip', gzip_compress_level=9)
 
 rate_limit: Tuple[Literal['second'], int] = ('second', 10)
 rate_limit_config = RateLimitConfig(rate_limit=rate_limit, exclude=['/schema'])
+

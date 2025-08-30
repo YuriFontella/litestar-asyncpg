@@ -44,3 +44,4 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
 
         else:
             return AuthenticationResult(user=user, auth=auth)
+
