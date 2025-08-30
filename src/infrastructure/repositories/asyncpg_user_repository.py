@@ -3,20 +3,18 @@ from __future__ import annotations
 from typing import Optional
 from asyncpg import Connection
 
-from src/domain.entities.user import User  # type: ignore
-from src/domain/entities/user import User as DomainUser
-from src/domain/interfaces/user_repository import UserRepository
+from src.domain.entities.user import User as DomainUser
+from src.domain.interfaces.user_repository import UserRepository
+from src.infrastructure.database.queries.users import (
+    FIND_BY_EMAIL,
+    CREATE_USER,
+    FIND_ACTIVE_BY_EMAIL,
+)
 
 
 class AsyncpgUserRepository(UserRepository):
     async def find_by_email(self, conn: Connection, email: str) -> Optional[DomainUser]:
-        query = """
-            select id, name, email, password, role, status
-            from users
-            where email = $1
-            limit 1
-        """
-        record = await conn.fetchrow(query, email)
+        record = await conn.fetchrow(FIND_BY_EMAIL, email)
         if not record:
             return None
         return DomainUser(
@@ -29,13 +27,8 @@ class AsyncpgUserRepository(UserRepository):
         )
 
     async def create(self, conn: Connection, user: DomainUser) -> int:
-        query = """
-            insert into users (name, email, password, role, status)
-            values ($1, $2, $3, $4, coalesce($5, true))
-            returning id
-        """
         record = await conn.fetchrow(
-            query,
+            CREATE_USER,
             user.name,
             user.email,
             user.password,
@@ -44,14 +37,10 @@ class AsyncpgUserRepository(UserRepository):
         )
         return int(record["id"]) if record else 0
 
-    async def find_active_by_email(self, conn: Connection, email: str) -> Optional[DomainUser]:
-        query = """
-            select id, name, email, password, role, status
-            from users
-            where email = $1 and status = true
-            limit 1
-        """
-        record = await conn.fetchrow(query, email)
+    async def find_active_by_email(
+        self, conn: Connection, email: str
+    ) -> Optional[DomainUser]:
+        record = await conn.fetchrow(FIND_ACTIVE_BY_EMAIL, email)
         if not record:
             return None
         return DomainUser(
@@ -62,4 +51,3 @@ class AsyncpgUserRepository(UserRepository):
             role=record["role"],
             status=record["status"],
         )
-

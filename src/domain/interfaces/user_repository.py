@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 from asyncpg import Connection
 
-from src/domain/entities/user import User
+from src.domain.entities.user import User
 
 
 class UserRepository(ABC):
@@ -18,6 +18,7 @@ class UserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def find_active_by_email(self, conn: Connection, email: str) -> Optional[User]:
+    async def find_active_by_email(
+        self, conn: Connection, email: str
+    ) -> Optional[User]:
         raise NotImplementedError
-

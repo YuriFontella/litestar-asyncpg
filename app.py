@@ -3,8 +3,11 @@ from litestar.exceptions import HTTPException
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.static_files import create_static_files_router
 
-from config.plugin.asyncpg import asyncpg
-from config.exception.main import app_exception_handler, internal_server_error_handler
+from src.infrastructure.database.asyncpg import asyncpg
+from src.presentation.exceptions.main import (
+    app_exception_handler,
+    internal_server_error_handler,
+)
 
 from src.presentation.channels.main import channels_plugin
 from src.presentation.events.main import on_listener
@@ -24,7 +27,9 @@ app = Litestar(
         root.router,
         teams.router,
         users.router,
-        create_static_files_router(path='/public', directories=['public'], send_as_attachment=True),
+        create_static_files_router(
+            path="/public", directories=["public"], send_as_attachment=True
+        ),
         auth.router,
     ],
     plugins=[asyncpg, channels_plugin],

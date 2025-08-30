@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from typing import List
 from asyncpg import Connection
 
-from src/domain.entities.team import TeamWithPlayers
-from src/domain.interfaces.team_repository import TeamRepository
+from src.domain.entities.team import TeamWithPlayers
+from src.domain.interfaces.team_repository import TeamRepository
 
 
 @dataclass(slots=True)
@@ -29,4 +29,3 @@ class ListTeamsUseCase:
                 )
             )
         return result
-

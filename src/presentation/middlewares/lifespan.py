@@ -1,5 +1,5 @@
 from litestar import Litestar
-from config.plugin.asyncpg import config
+from src.infrastructure.database.asyncpg import config
 from src.core.di.container import Container
 
 
@@ -7,7 +7,7 @@ async def on_startup(app: Litestar):
     # Initialize database tables
     pool = config.provide_pool(app.state)
     async with pool.acquire() as conn:
-        with open('config/sql/tables.sql', 'r') as file:
+        with open("src/infrastructure/database/sql/tables.sql", "r") as file:
             sql = file.read()
             await conn.execute(sql)
 
@@ -17,4 +17,3 @@ async def on_startup(app: Litestar):
 
 async def on_shutdown(app: Litestar):
     pass
-

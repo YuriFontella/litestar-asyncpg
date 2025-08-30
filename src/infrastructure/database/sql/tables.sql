@@ -41,3 +41,4 @@ create table if not exists players (
 
 create index if not exists users_index_email on users (email asc);
 create index if not exists teams_index_protocol on teams (protocol asc);
+

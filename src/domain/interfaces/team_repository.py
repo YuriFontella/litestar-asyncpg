@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable, List
 from asyncpg import Connection
 
-from src/domain/entities/team import Team, Player, TeamWithPlayers
+from src.domain.entities.team import Team, Player
 
 
 class TeamRepository(ABC):
@@ -14,7 +14,9 @@ class TeamRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def add_players(self, conn: Connection, players: Iterable[Player], team_id: int) -> None:
+    async def add_players(
+        self, conn: Connection, players: Iterable[Player], team_id: int
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -22,6 +24,7 @@ class TeamRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def list_players_by_team(self, conn: Connection, team_id: int) -> List[Player]:
+    async def list_players_by_team(
+        self, conn: Connection, team_id: int
+    ) -> List[Player]:
         raise NotImplementedError
-

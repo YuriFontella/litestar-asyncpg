@@ -6,23 +6,27 @@ from litestar.middleware import AbstractAuthenticationMiddleware, Authentication
 from litestar.exceptions import NotAuthorizedException
 from litestar.connection import ASGIConnection
 
-from settings import key
-from config.plugin.asyncpg import config
+from src.core.config.settings import settings
+from src.infrastructure.database.asyncpg import config
 
 
 class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
-    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
+    async def authenticate_request(
+        self, connection: ASGIConnection
+    ) -> AuthenticationResult:
         try:
-            token = connection.headers.get('x-access-token')
+            token = connection.headers.get("x-access-token")
             if not token:
                 raise NotAuthorizedException()
 
-            auth = decode(jwt=token, key=key, algorithms=["HS256"])
-            salt = 'xYzDeV@0000'
-            access_token = hashlib.pbkdf2_hmac('sha256', auth['access_token'].encode(), salt.encode(), 1000)
-            user_id = auth.get('id')
+            auth = decode(jwt=token, key=settings.key, algorithms=[settings.jwt_alg])
+            salt = settings.access_token_salt
+            access_token = hashlib.pbkdf2_hmac(
+                "sha256", auth["access_token"].encode(), salt.encode(), 1000
+            )
+            user_id = auth.get("id")
 
-            pool = config.provide_pool(connection.scope['app'].state)
+            pool = config.provide_pool(connection.scope["app"].state)
             async with pool.acquire() as conn:
                 query = """
                     select u.id, u.name, u.email, u.role, u.status 
@@ -44,4 +48,3 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
 
         else:
             return AuthenticationResult(user=user, auth=auth)
-

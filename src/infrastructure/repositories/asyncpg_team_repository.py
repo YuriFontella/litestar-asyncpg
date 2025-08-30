@@ -3,25 +3,25 @@ from __future__ import annotations
 from typing import Iterable, List
 from asyncpg import Connection
 
-from src/domain/entities/team import Team, Player
-from src/domain/interfaces/team_repository import TeamRepository
+from src.domain.entities.team import Team, Player
+from src.domain.interfaces.team_repository import TeamRepository
+from src.infrastructure.database.queries.teams import (
+    UPSERT_TEAM,
+    LIST_TEAMS,
+    LIST_PLAYERS_BY_TEAM,
+)
 
 
 class AsyncpgTeamRepository(TeamRepository):
     async def upsert_team(self, conn: Connection, team: Team) -> int:
-        query = """
-            insert into teams (name, price, protocol, owner)
-            values ($1, $2, $3, $4)
-            on conflict (name)
-            do update set price = excluded.price
-            returning id
-        """
         record = await conn.fetchrow(
-            query, team.name, team.price, team.protocol, team.owner
+            UPSERT_TEAM, team.name, team.price, team.protocol, team.owner
         )
         return int(record["id"]) if record else 0
 
-    async def add_players(self, conn: Connection, players: Iterable[Player], team_id: int) -> None:
+    async def add_players(
+        self, conn: Connection, players: Iterable[Player], team_id: int
+    ) -> None:
         data = [(p.name, team_id) for p in players]
         if data:
             await conn.executemany(
@@ -29,7 +29,7 @@ class AsyncpgTeamRepository(TeamRepository):
             )
 
     async def list_teams(self, conn: Connection) -> List[Team]:
-        records = await conn.fetch("select * from teams")
+        records = await conn.fetch(LIST_TEAMS)
         return [
             Team(
                 id=r["id"],
@@ -43,7 +43,7 @@ class AsyncpgTeamRepository(TeamRepository):
         ]
 
     async def list_players_by_team(self, conn: Connection, team_id: int):
-        records = await conn.fetch("select * from players where team_id = $1", team_id)
+        records = await conn.fetch(LIST_PLAYERS_BY_TEAM, team_id)
         return [
             Player(
                 id=r["id"],
@@ -55,4 +55,3 @@ class AsyncpgTeamRepository(TeamRepository):
             )
             for r in records
         ]
-

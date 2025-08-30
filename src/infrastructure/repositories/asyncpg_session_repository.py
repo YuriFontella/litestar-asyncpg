@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from asyncpg import Connection
 
-from src/domain/interfaces/session_repository import SessionRepository
+from src.domain.interfaces.session_repository import SessionRepository
+from src.infrastructure.database.queries.sessions import CREATE_SESSION
 
 
 class AsyncpgSessionRepository(SessionRepository):
@@ -14,10 +15,7 @@ class AsyncpgSessionRepository(SessionRepository):
         ip: str | None,
         user_id: int,
     ) -> int:
-        query = """
-            insert into sessions (access_token, user_agent, ip, user_id) 
-            values ($1, $2, $3, $4) returning id
-        """
-        record = await conn.fetchrow(query, access_token, user_agent, ip, user_id)
+        record = await conn.fetchrow(
+            CREATE_SESSION, access_token, user_agent, ip, user_id
+        )
         return int(record["id"]) if record else 0
-
