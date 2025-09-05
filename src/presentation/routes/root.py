@@ -1,15 +1,17 @@
-from litestar import Router, MediaType, get
+from litestar import Router, MediaType, Controller, get
 
 from src.presentation.controllers.root_controller import RootController
 
-
-controller = RootController()
-
-
-@get(path='/', media_type=MediaType.JSON)
-async def root() -> bool:
-    return await controller.root()
+# Instantiate controller at module level
+root_controller = RootController()
 
 
-router = Router(path='/root', route_handlers=[root])
+class RootRoutes(Controller):
+    path = "/"
 
+    @get(media_type=MediaType.JSON)
+    async def root(self) -> bool:
+        return await root_controller.root()
+
+
+router = Router(path="/root", route_handlers=[RootRoutes])

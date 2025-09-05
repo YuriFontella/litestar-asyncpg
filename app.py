@@ -1,10 +1,12 @@
 from litestar import Litestar
+from litestar.events import EventListener
+from typing import Sequence, cast
 from litestar.exceptions import HTTPException
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.static_files import create_static_files_router
 
 from src.infrastructure.database.asyncpg import asyncpg
-from src.presentation.exceptions.main import (
+from src.core.exceptions.main import (
     app_exception_handler,
     internal_server_error_handler,
 )
@@ -12,7 +14,6 @@ from src.presentation.exceptions.main import (
 from src.presentation.channels.main import channels_plugin
 from src.presentation.events.main import on_listener
 from src.presentation.middlewares.factory import factory
-from src.presentation.middlewares.lifespan import on_startup, on_shutdown
 from src.presentation.middlewares.utils import (
     cors_config,
     csrf_config,
@@ -37,9 +38,7 @@ app = Litestar(
     csrf_config=csrf_config,
     compression_config=compression_config,
     middleware=[factory, rate_limit_config.middleware],
-    listeners=[on_listener],
-    on_startup=[on_startup],
-    on_shutdown=[on_shutdown],
+    listeners=cast(Sequence[EventListener], [on_listener]),
     pdb_on_exception=False,
     exception_handlers={
         HTTPException: app_exception_handler,

@@ -1,27 +1,25 @@
-from litestar import Router, get
+from litestar import Router, get, Controller
 from litestar.types import Scope
 
 from src.presentation.middlewares.auth import AuthenticationMiddleware
 
 
-@get(path='/data')
-async def auth_data(scope: Scope) -> dict:
-    user = scope.get('user')
+class AuthRoutes(Controller):
+    path = "/"
 
-    response = {
-        'id': user['id'],
-        'name': user['name'],
-        'email': user['email'],
-        'status': user['status'],
-        'role': user['role']
-    }
-
-    return response
+    @get(path="data")
+    async def auth_data(self, scope: Scope) -> dict:
+        user = scope.get("user")
+        response = {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+            "status": user["status"],
+            "role": user["role"],
+        }
+        return response
 
 
 router = Router(
-    path='/auth',
-    route_handlers=[auth_data],
-    middleware=[AuthenticationMiddleware]
+    path="/auth", route_handlers=[AuthRoutes], middleware=[AuthenticationMiddleware]
 )
-
