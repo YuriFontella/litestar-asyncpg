@@ -10,15 +10,22 @@ from src.domain.entities.token import Token
 
 
 @dataclass(slots=True)
-class UserController:
-    register_uc: RegisterUserUseCase
-    authenticate_uc: AuthenticateUserUseCase
+class RegisterUserController:
+    use_case: RegisterUserUseCase
 
     async def register(self, conn: Connection, data: User) -> bool:
-        return await self.register_uc.execute(conn, data)
+        return await self.use_case.execute(conn, data)
+
+
+@dataclass(slots=True)
+class AuthenticateUserController:
+    use_case: AuthenticateUserUseCase
 
     async def authenticate(
-        self, conn: Connection, creds: AuthCredentials, user_agent: str | None, ip: str | None
+        self,
+        conn: Connection,
+        creds: AuthCredentials,
+        user_agent: str | None,
+        ip: str | None,
     ) -> Token:
-        return await self.authenticate_uc.execute(conn, creds, user_agent, ip)
-
+        return await self.use_case.execute(conn, creds, user_agent, ip)

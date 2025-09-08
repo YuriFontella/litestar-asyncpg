@@ -57,6 +57,11 @@ class Settings:
     channels: List[str]
     channels_create_ws: bool
 
+    # Logging
+    environment: str
+    service_name: str
+    log_level: str
+
     @classmethod
     def from_env(cls) -> "Settings":
         key = os.getenv("KEY", "")
@@ -85,6 +90,9 @@ class Settings:
             rate_limit_exclude=_get_list("RATE_LIMIT_EXCLUDE", ["/schema"]),
             channels=_get_list("CHANNELS", ["notifications"]),
             channels_create_ws=_get_bool("CHANNELS_CREATE_WS", True),
+            environment=os.getenv("ENV", os.getenv("APP_ENV", "development")).lower(),
+            service_name=os.getenv("SERVICE_NAME", "litestar-asyncpg-api"),
+            log_level=os.getenv("LOG_LEVEL", "INFO").upper(),
         )
 
 

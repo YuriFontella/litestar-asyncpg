@@ -9,9 +9,10 @@ root_controller = RootController()
 class RootRoutes(Controller):
     path = "/"
 
-    @get(media_type=MediaType.JSON)
-    async def root(self) -> bool:
-        return await root_controller.root()
+    @get(path="", media_type=MediaType.JSON)
+    async def root(self) -> dict:
+        ok = await root_controller.root()
+        return {"status": "ok" if ok else "fail"}
 
 
-router = Router(path="/root", route_handlers=[RootRoutes])
+router = Router(path="/", route_handlers=[RootRoutes])

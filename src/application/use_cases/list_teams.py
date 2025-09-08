@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
-from asyncpg import Connection
+from typing import List, Any
 
 from src.domain.entities.team import TeamWithPlayers
 from src.domain.interfaces.team_repository import TeamRepository
@@ -12,7 +11,7 @@ from src.domain.interfaces.team_repository import TeamRepository
 class ListTeamsUseCase:
     team_repo: TeamRepository
 
-    async def execute(self, conn: Connection) -> List[TeamWithPlayers]:
+    async def execute(self, conn: Any) -> List[TeamWithPlayers]:
         teams = await self.team_repo.list_teams(conn)
         result: list[TeamWithPlayers] = []
         for t in teams:

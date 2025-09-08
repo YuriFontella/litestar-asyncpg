@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 import random
-from asyncpg import Connection
 
 from src.domain.entities.team import Team, Player
 from src.domain.interfaces.team_repository import TeamRepository
@@ -13,7 +13,7 @@ class CreateTeamUseCase:
     team_repo: TeamRepository
 
     async def execute(
-        self, conn: Connection, team: Team, players: list[Player], owner: str
+        self, conn: Any, team: Team, players: list[Player], owner: str
     ) -> bool:
         protocol = random.randint(111111, 999999)
         team.owner = owner
