@@ -8,8 +8,9 @@ from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 
-from ..config import settings
-from .plugins import asyncpg_config
+from src.app.config.base import get_settings
+from src.app.config.constants import JWT_ALGORITHM, SESSION_SALT
+from src.app.server.plugins import asyncpg_config
 
 
 class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
@@ -21,8 +22,11 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
             if not token:
                 raise NotAuthorizedException()
 
-            auth = decode(jwt=token, key=settings.key, algorithms=["HS256"])
-            salt = "xYzDeV@0000"
+            settings = get_settings()
+            auth = decode(
+                jwt=token, key=settings.app.SECRET_KEY, algorithms=[JWT_ALGORITHM]
+            )
+            salt = SESSION_SALT
             access_token = hashlib.pbkdf2_hmac(
                 "sha256", auth["access_token"].encode(), salt.encode(), 1000
             )

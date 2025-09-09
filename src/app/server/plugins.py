@@ -1,13 +1,13 @@
 from litestar.channels import ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar_asyncpg import AsyncpgConfig, AsyncpgPlugin, PoolConfig
+from litestar.plugins.structlog import StructlogPlugin
+from litestar_asyncpg import AsyncpgPlugin
 
-from ..config import settings
+from src.app.config import app as config
 
-asyncpg_config = AsyncpgConfig(
-    pool_config=PoolConfig(dsn=settings.dsn, min_size=4, max_size=16)
-)
+asyncpg_config = config.asyncpg
 asyncpg = AsyncpgPlugin(config=asyncpg_config)
+structlog = StructlogPlugin(config=config.log)
 
 
 def get_plugins() -> list:
@@ -16,4 +16,4 @@ def get_plugins() -> list:
         channels=["notifications"],
         create_ws_route_handlers=True,
     )
-    return [asyncpg, channels]
+    return [structlog, asyncpg, channels]

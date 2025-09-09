@@ -6,6 +6,6 @@ from litestar.events import listener
 
 
 @listener("messages")
-async def on_listener(text: str) -> None:
+async def on_message(text: str) -> None:
     await asyncio.sleep(10)
     print(text)

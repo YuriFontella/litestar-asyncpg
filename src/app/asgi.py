@@ -1,5 +1,16 @@
 from __future__ import annotations
 
-from .server.core import create_app
+from typing import TYPE_CHECKING
 
-app = create_app()
+if TYPE_CHECKING:
+    from litestar import Litestar
+
+
+def create_app() -> Litestar:
+    """Create ASGI application using the core plugin pattern."""
+
+    from litestar import Litestar
+
+    from src.app.server.core import ApplicationCore
+
+    return Litestar(plugins=[ApplicationCore()])

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from litestar import Litestar
 
-from .plugins import asyncpg_config
+from src.app.server.plugins import asyncpg_config
 
 
 async def on_startup(app: Litestar) -> None:
