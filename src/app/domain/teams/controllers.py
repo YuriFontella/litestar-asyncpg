@@ -19,13 +19,18 @@ from src.app.domain.teams.services import TeamsService
 
 
 class TeamController(Controller):
-    """Team controller with CRUD operations."""
+    """Controller de Times com operações de criação e consulta.
+
+    Segurança:
+    - Middleware de autenticação aplicado a todas as rotas.
+    - Guard exige privilégio de administrador de time (ver `requires_team_admin`).
+    """
 
     path = "/teams"
     tags = ["Teams"]
-    # Apply authentication middleware to all team routes
+    # Aplica middleware de autenticação em todas as rotas de times
     middleware = [AuthenticationMiddleware]
-    # Require team admin on all endpoints in this controller
+    # Exige permissão de administrador (guard) em todos os endpoints
     guards = [requires_team_admin]
     dependencies = {
         "teams_service": Provide(provide_teams_service, sync_to_thread=False)
@@ -39,10 +44,10 @@ class TeamController(Controller):
         request: Request,
         teams_service: TeamsService,
     ) -> TeamRead:
-        """Create a new team with players."""
+        """Cria novo time com jogadores em operação transacional."""
         user = scope.get("user")
 
-        # Check if team name already exists
+        # Verifica se nome já está em uso
         if await teams_service.team_name_exists(data.name):
             raise HTTPException(
                 detail="Já existe um time com esse nome", status_code=400
@@ -64,12 +69,12 @@ class TeamController(Controller):
     async def list_teams_with_players(
         self, teams_service: TeamsService
     ) -> list[TeamWithPlayersRead]:
-        """List all teams with their players."""
+        """Lista todos os times com seus jogadores."""
         return await teams_service.list_with_players()
 
     @get(path="/{team_id:int}")
     async def get_team(self, team_id: int, teams_service: TeamsService) -> TeamRead:
-        """Get team by ID."""
+        """Obtém time por ID."""
         team = await teams_service.get_team_by_id(team_id)
         if not team:
             raise HTTPException(status_code=404, detail="Time não encontrado")
@@ -79,7 +84,7 @@ class TeamController(Controller):
     async def get_team_with_players(
         self, team_id: int, teams_service: TeamsService
     ) -> TeamWithPlayersRead:
-        """Get team with players by ID."""
+        """Obtém time e jogadores por ID."""
         team = await teams_service.get_team_with_players(team_id)
         if not team:
             raise HTTPException(status_code=404, detail="Time não encontrado")

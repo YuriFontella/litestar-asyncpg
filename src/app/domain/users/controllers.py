@@ -14,7 +14,7 @@ from src.app.domain.users.services import UsersService
 
 
 class UserController(Controller):
-    """User controller with CRUD operations."""
+    """Controller de Usuários com operações de criação, autenticação e consulta."""
 
     path = "/users"
     tags = ["Users"]
@@ -26,18 +26,18 @@ class UserController(Controller):
     async def create_user(
         self, data: UserCreate, channels: ChannelsPlugin, users_service: UsersService
     ) -> UserRead:
-        """Create a new user account."""
-        # Validate data
+        """Cria uma nova conta de usuário."""
+        # Valida dados (msgspec garante tipos corretos)
         payload = msgspec.to_builtins(data)
         validated_data = msgspec.convert(payload, type=UserCreate)
 
-        # Check if email already exists
+        # Verifica se email já existe
         if await users_service.email_exists(validated_data.email):
             raise HTTPException(
                 detail="Já existe um cadastro com esse e-mail", status_code=400
             )
 
-        # Create user
+        # Cria usuário
         user_record = await users_service.create(validated_data)
         if user_record:
             channels.publish("Usuário criado com sucesso!", channels=["notifications"])
@@ -54,7 +54,7 @@ class UserController(Controller):
     async def authenticate_user(
         self, data: UserLogin, request: Request, users_service: UsersService
     ) -> Token:
-        """Authenticate user and return JWT token."""
+        """Autentica usuário e retorna token JWT."""
         try:
             user_agent = request.headers.get("user-agent")
             ip = request.client.host if request.client else None
@@ -64,7 +64,7 @@ class UserController(Controller):
 
     @get(path="/{user_id:int}")
     async def get_user(self, user_id: int, users_service: UsersService) -> UserRead:
-        """Get user by ID."""
+        """Obtém usuário por ID."""
         user_record = await users_service.get_by_id(user_id)
         if not user_record:
             raise HTTPException(status_code=404, detail="Usuário não encontrado")

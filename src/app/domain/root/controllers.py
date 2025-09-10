@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from litestar import Controller, MediaType, get
-
 from src.app.domain.root import urls
 
 

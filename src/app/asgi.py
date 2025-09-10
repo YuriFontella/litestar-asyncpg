@@ -12,5 +12,7 @@ def create_app() -> Litestar:
     from litestar import Litestar
 
     from src.app.server.core import ApplicationCore
+    from src.app.config.base import get_settings
 
-    return Litestar(plugins=[ApplicationCore()])
+    settings = get_settings()
+    return Litestar(plugins=[ApplicationCore()], debug=settings.app.DEBUG)

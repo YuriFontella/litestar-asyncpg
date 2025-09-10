@@ -17,10 +17,15 @@ from src.app.config.app import (
 from src.app.server.lifespan import on_shutdown, on_startup
 from src.app.server.middleware import factory
 from src.app.server.plugins import get_plugins
+from src.app.config.base import get_settings
 
 
 class ApplicationCore(InitPluginProtocol):
-    """Core application configuration plugin."""
+    """Plugin de configuração central da aplicação.
+
+    Responsável por registrar handlers de rota, plugins, middlewares, listeners (eventos),
+    dependências, ciclo de vida (startup/shutdown) e tratadores de exceção.
+    """
 
     def on_app_init(self, app_config):  # type: ignore[override]
         from src.app.domain.users.controllers import UserController
@@ -29,7 +34,8 @@ class ApplicationCore(InitPluginProtocol):
 
         from src.app.domain.teams.signals import on_message
 
-        # Register route handlers
+        # Registra os controllers (handlers de rota) e rota de arquivos estáticos
+        # IMPORTANTE: a ordem aqui pode afetar resolução de conflitos de rota em alguns frameworks.
         app_config.route_handlers.extend(
             [
                 RootController,
@@ -41,38 +47,39 @@ class ApplicationCore(InitPluginProtocol):
             ]
         )
 
-        # Register plugins
+        # Registra plugins (ex: banco, canais, etc.)
         app_config.plugins.extend(get_plugins())
 
-        # Security and CORS configuration
+        # Configuração de segurança e CORS / compressão / CSRF
         app_config.cors_config = cors_config
         app_config.csrf_config = csrf_config
         app_config.compression_config = compression_config
 
-        # Middleware
+        # Middleware globais (ordem importa: autenticação, rate limit, etc.)
         app_config.middleware.extend([factory, rate_limit_config.middleware])
 
-        # Event listeners
+        # Listeners / sinais (ex: canal de mensagens)
         app_config.listeners.extend([on_message])
 
-        # Dependency injection
+        # Injeção de dependências disponíveis para handlers
         app_config.dependencies.update(
             {
                 "current_user": Provide(provide_current_user, sync_to_thread=False),
             }
         )
 
-        # Application lifecycle
+        # Eventos de ciclo de vida da aplicação
         app_config.on_startup.extend([on_startup])
         app_config.on_shutdown.extend([on_shutdown])
 
-        # Exception handlers
+        # Handlers de exceções customizados
         app_config.exception_handlers = {
             HTTPException: app_exception_handler,
             HTTP_500_INTERNAL_SERVER_ERROR: internal_server_error_handler,
         }
 
-        # Debug configuration
-        app_config.pdb_on_exception = False
+        # Modo debug: ativa PDB em exceções quando configurado
+        settings = get_settings()
+        app_config.pdb_on_exception = bool(settings.app.DEBUG)
 
         return app_config

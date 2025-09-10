@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 
 from src.app.config.utils import get_env
-from src.app.config.constants import JWT_ALGORITHM
 
 
 @dataclass
@@ -55,8 +54,23 @@ class AppSettings:
         default_factory=lambda: get_env("CSRF_COOKIE_SECURE", False)
     )
     """CSRF Secure Cookie."""
-    JWT_ENCRYPTION_ALGORITHM: str = JWT_ALGORITHM
-    """JWT Encryption Algorithm."""
+    JWT_ALGORITHM: str = field(
+        default_factory=lambda: get_env("JWT_ALGORITHM", "HS256")
+    )
+    """JWT signing / encryption algorithm (e.g. HS256)."""
+    SESSION_SALT: str = field(
+        default_factory=lambda: get_env("SESSION_SALT", "xYzDeV@0000")
+    )
+    """Static salt used for session token PBKDF2 derivation (change in production)."""
+    DEFAULT_PLAYER_LANGUAGE: str = field(
+        default_factory=lambda: get_env("DEFAULT_PLAYER_LANGUAGE", "pt-br")
+    )
+    """Default language assigned to players when not specified."""
+
+    # Backwards compatibility: keep old attribute name if referenced elsewhere
+    @property
+    def JWT_ENCRYPTION_ALGORITHM(self) -> str:  # pragma: no cover - simple alias
+        return self.JWT_ALGORITHM
 
 
 @dataclass

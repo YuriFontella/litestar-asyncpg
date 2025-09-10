@@ -6,5 +6,5 @@ from litestar.connection import ASGIConnection
 
 
 def provide_current_user(connection: ASGIConnection) -> Any | None:
-    """Provide current authenticated user from connection."""
+    """Fornece o usuário autenticado atual extraído do objeto de conexão."""
     return connection.user if hasattr(connection, "user") else None

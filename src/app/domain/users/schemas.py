@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import Optional
-from datetime import datetime
 
 from msgspec import Struct
 
@@ -18,16 +17,6 @@ class UserCreate(UserBase):
     """Schema for creating a new user."""
 
     password: str
-
-
-class UserUpdate(Struct, kw_only=True, omit_defaults=True):
-    """Schema for updating user information."""
-
-    name: Optional[str] = None
-    email: Optional[str] = None
-    password: Optional[str] = None
-    role: Optional[str] = None
-    status: Optional[bool] = None
 
 
 class UserRead(UserBase):
@@ -60,26 +49,3 @@ class Token(Struct):
 
     token: str
     type: str = "Bearer"
-
-
-class SessionBase(Struct, kw_only=True):
-    """Base session schema."""
-
-    user_agent: Optional[str] = None
-    ip: Optional[str] = None
-    user_id: int
-
-
-class SessionCreate(SessionBase):
-    """Schema for creating a session."""
-
-    access_token: str
-
-
-class SessionRead(SessionBase):
-    """Schema for reading session data."""
-
-    id: int
-    access_token: str
-    revoked: bool
-    date: datetime
