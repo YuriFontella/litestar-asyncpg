@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import os
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 T = TypeVar("T")
 
 
-def get_env(key: str, default: T = None) -> T:
+def get_env(key: str, default: Optional[T] = None) -> T:
     """Get environment variable with default value.
 
     Args:
