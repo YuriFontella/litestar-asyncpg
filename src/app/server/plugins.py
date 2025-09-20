@@ -5,8 +5,8 @@ from litestar_asyncpg import AsyncpgPlugin
 
 from src.app.config import app as config
 
-asyncpg_config = config.asyncpg
-asyncpg = AsyncpgPlugin(config=asyncpg_config)
+
+asyncpg = AsyncpgPlugin(config=config.asyncpg)
 structlog = StructlogPlugin(config=config.log)
 channels = ChannelsPlugin(
     backend=MemoryChannelsBackend(),

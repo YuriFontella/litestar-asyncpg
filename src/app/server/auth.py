@@ -9,20 +9,14 @@ from litestar.exceptions import NotAuthorizedException
 from litestar.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 
 from src.app.config.base import get_settings
-from src.app.server.plugins import asyncpg_config
+from src.app.config import app as config
 
 
 class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
     # Middleware de autenticação baseado em JWT + sessão persistida no banco.
-    # Fluxo:
-    # 1. Lê header 'x-access-token'.
-    # 2. Decodifica JWT para obter id do usuário e token de sessão aleatório.
-    # 3. Deriva (hash) o token de sessão com PBKDF2-HMAC (salt + 1000 iterações) => deve coincidir com o armazenado.
-    # 4. Valida existência de sessão não revogada e usuário ativo.
-    # 5. Injeta usuário em connection.user.
     async def authenticate_request(
         self, connection: ASGIConnection
-    ) -> AuthenticationResult:  # type: ignore[override]
+    ) -> AuthenticationResult:
         try:
             token = connection.headers.get("x-access-token")
             if not token:
@@ -41,7 +35,7 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
             user_id = auth.get("id")
 
             # Obtém pool asyncpg via configuração do plugin (evita recriar conexões)
-            pool = asyncpg_config.provide_pool(connection.scope["app"].state)
+            pool = config.asyncpg.provide_pool(connection.scope["app"].state)
             async with pool.acquire() as conn:
                 query = """
                     select u.id, u.name, u.email, u.role, u.status

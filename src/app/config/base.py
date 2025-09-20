@@ -67,7 +67,7 @@ class AppSettings:
 
     # Backwards compatibility: keep old attribute name if referenced elsewhere
     @property
-    def JWT_ENCRYPTION_ALGORITHM(self) -> str:  # pragma: no cover - simple alias
+    def JWT_ENCRYPTION_ALGORITHM(self) -> str:
         return self.JWT_ALGORITHM
 
 

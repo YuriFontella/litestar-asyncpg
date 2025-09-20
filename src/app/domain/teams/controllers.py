@@ -56,7 +56,7 @@ class TeamController(Controller):
         try:
             team = await teams_service.create_with_players(
                 data,
-                owner_name=user["name"] if user else None,  # type: ignore[index]
+                owner_name=user["name"] if user else None,
             )
 
             request.app.emit("messages", "Seu time foi criado com sucesso!")

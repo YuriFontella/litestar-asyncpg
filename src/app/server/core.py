@@ -27,7 +27,7 @@ class ApplicationCore(InitPluginProtocol):
     dependências, ciclo de vida (startup/shutdown) e tratadores de exceção.
     """
 
-    def on_app_init(self, app_config):  # type: ignore[override]
+    def on_app_init(self, app_config):
         from src.app.domain.users.controllers import UserController
         from src.app.domain.teams.controllers import TeamController
         from src.app.domain.root.controllers import RootController
