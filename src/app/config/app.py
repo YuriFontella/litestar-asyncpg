@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import Literal, Tuple
 
 import structlog
+
+from litestar.logging.config import StructLoggingConfig
+from litestar.plugins.structlog import StructlogConfig
 from litestar.config.compression import CompressionConfig
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
-from litestar.logging.config import StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 from litestar.middleware.rate_limit import RateLimitConfig
-from litestar.plugins.structlog import StructlogConfig
 from litestar_asyncpg import AsyncpgConfig, PoolConfig
 
 from src.app.config.base import get_settings
@@ -49,22 +50,6 @@ compression = CompressionConfig(backend="gzip", gzip_compress_level=9)
 rate_limit: Tuple[Literal["second"], int] = ("second", 10)
 rate_limit_config = RateLimitConfig(rate_limit=rate_limit, exclude=["/schema"])
 
-log = StructlogConfig(
-    structlog_logging_config=StructLoggingConfig(
-        log_exceptions="always",
-        processors=[
-            structlog.processors.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.dict_tracebacks,
-            structlog.dev.ConsoleRenderer(),
-        ],
-    ),
-    middleware_logging_config=LoggingMiddlewareConfig(
-        request_log_fields=["path", "method"],
-        response_log_fields=["status_code"],
-    ),
-)
-
 asyncpg = AsyncpgConfig(
     pool_config=PoolConfig(
         dsn=settings.db.DSN,
@@ -73,4 +58,19 @@ asyncpg = AsyncpgConfig(
         max_queries=settings.db.MAX_QUERIES,
         max_inactive_connection_lifetime=settings.db.MAX_INACTIVE_CONNECTION_LIFETIME,
     )
+)
+
+log = StructlogConfig(
+    structlog_logging_config=StructLoggingConfig(
+        log_exceptions="always",
+        processors=[
+            structlog.processors.add_log_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.JSONRenderer(),
+        ],
+    ),
+    middleware_logging_config=LoggingMiddlewareConfig(
+        request_log_fields=["path", "method"],
+        response_log_fields=["status_code"],
+    ),
 )

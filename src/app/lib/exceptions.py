@@ -9,7 +9,7 @@ def app_exception_handler(request: Request, exc: HTTPException) -> Response:
     """
     return Response(
         content={
-            "error": "erro de aplicação",
+            "error": "App Error",
             "path": request.url.path,
             "detail": exc.detail,
             "status_code": exc.status_code,

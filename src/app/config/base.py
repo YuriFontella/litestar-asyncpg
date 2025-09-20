@@ -58,9 +58,7 @@ class AppSettings:
         default_factory=lambda: get_env("JWT_ALGORITHM", "HS256")
     )
     """JWT signing / encryption algorithm (e.g. HS256)."""
-    SESSION_SALT: str = field(
-        default_factory=lambda: get_env("SESSION_SALT", "xYzDeV@0000")
-    )
+    SESSION_SALT: str = field(default_factory=lambda: get_env("SESSION_SALT", ""))
     """Static salt used for session token PBKDF2 derivation (change in production)."""
     DEFAULT_PLAYER_LANGUAGE: str = field(
         default_factory=lambda: get_env("DEFAULT_PLAYER_LANGUAGE", "pt-br")
