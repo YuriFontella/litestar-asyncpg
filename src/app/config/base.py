@@ -60,7 +60,7 @@ class AppSettings:
     )
     """JWT signing / encryption algorithm (e.g. HS256)."""
     SESSION_SALT: str = field(
-        default_factory=lambda: get_env("SESSION_SALT", secrets.token_bytes(16))
+        default_factory=lambda: get_env("SESSION_SALT", secrets.token_hex(16))
     )
     """Static salt used for session token PBKDF2 derivation (change in production)."""
     DEFAULT_PLAYER_LANGUAGE: str = field(
