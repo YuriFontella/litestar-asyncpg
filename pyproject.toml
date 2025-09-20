@@ -25,7 +25,7 @@ ruff = "^0.12.12"
 pre-commit = "^4.3.0"
 
 [tool.poetry.scripts]
-app = "src.app.main:run_cli"
+app = "app.main:run_cli"
 
 [build-system]
 requires = ["poetry-core>=2.2.0,<3.0.0"]

@@ -10,10 +10,28 @@ async def on_startup(app: Litestar) -> None:
     migrations_dir = Path(__file__).resolve().parent.parent / "db" / "migrations"
     migration_files = sorted(migrations_dir.glob("*.sql"))
     async with pool.acquire() as conn:
+        # Ensure the migrations table exists
+        await conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS _migrations (
+                id SERIAL PRIMARY KEY,
+                filename TEXT UNIQUE NOT NULL,
+                applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+        """
+        )
+        # Get the set of already-applied migration filenames
+        rows = await conn.fetch("SELECT filename FROM _migrations;")
+        applied = set(row["filename"] for row in rows)
         for sql_path in migration_files:
+            if sql_path.name in applied:
+                continue
             with sql_path.open("r", encoding="utf-8") as file:
                 sql = file.read()
                 await conn.execute(sql)
+                await conn.execute(
+                    "INSERT INTO _migrations (filename) VALUES ($1);", sql_path.name
+                )
 
 
 async def on_shutdown(app: Litestar) -> None:

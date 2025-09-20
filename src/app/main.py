@@ -8,8 +8,8 @@ from typing import NoReturn
 
 def setup_environment() -> None:
     """Configure environment and Litestar app path."""
-    current_path = Path(__file__).parent.parent.resolve()
-    sys.path.append(str(current_path))
+    project_root = Path(__file__).parent.parent.parent.resolve()
+    sys.path.append(str(project_root))
     os.environ.setdefault("LITESTAR_APP", "src.app.asgi:create_app")
 
 

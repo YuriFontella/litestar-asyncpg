@@ -31,8 +31,8 @@ curl -sSL https://install.python-poetry.org | python3 -
 Crie um arquivo `.env` na raiz:
 
 ```
-KEY=secret
-DSN=postgresql://user:password@host:port/db
+SECRET_KEY=secret
+DATABASE_DSN=postgresql://user:password@host:port/db
 ```
 
 ### 3. Instalar dependências
