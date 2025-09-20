@@ -38,8 +38,7 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
             pool = config.asyncpg.provide_pool(connection.scope["app"].state)
             async with pool.acquire() as conn:
                 query = """
-                    select u.id, u.name, u.email, u.role, u.status
-                    from users u
+                    select u.id, u.name, u.email, u.role, u.status from users u
                     join sessions s on u.id = s.user_id
                     where
                         u.id = $1 and

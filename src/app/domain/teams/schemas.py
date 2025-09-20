@@ -5,15 +5,13 @@ from decimal import Decimal
 from typing import Optional
 
 from msgspec import Struct
-from src.app.config.base import get_settings
 
 
 class PlayerBase(Struct, kw_only=True, omit_defaults=True):
     """Base player schema."""
 
     name: str
-    # Use dynamic default from settings so it can be overridden via env.
-    language: Optional[str] = get_settings().app.DEFAULT_PLAYER_LANGUAGE
+    language: Optional[str] = None
 
 
 class PlayerCreate(PlayerBase):

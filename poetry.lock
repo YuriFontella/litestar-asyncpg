@@ -949,6 +949,18 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=8.3.4)", "pytest-
 type = ["mypy (>=1.14.1)"]
 
 [[package]]
+name = "poetry-core"
+version = "2.2.0"
+description = "Poetry PEP 517 Build Backend"
+optional = false
+python-versions = "<4.0,>=3.9"
+groups = ["main"]
+files = [
+    {file = "poetry_core-2.2.0-py3-none-any.whl", hash = "sha256:0edea81d07e88cbd407369eef753c722da8ff1338f554788dc04636e756318fc"},
+    {file = "poetry_core-2.2.0.tar.gz", hash = "sha256:b4033b71b99717a942030e074fec7e3082e5fde7a8ed10f02cd2413bdf940b1f"},
+]
+
+[[package]]
 name = "polyfactory"
 version = "2.22.2"
 description = "Mock data generation factories"
@@ -1547,4 +1559,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "1bb96c2ed41e8907b3e5f3240e9dae8633caf55bc40a3b8d59a0930787d658aa"
+content-hash = "d740cd1a4909b6da62c5c64db46cbe2893115886e73e1fa19b82eda650c8b548"

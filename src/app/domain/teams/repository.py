@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import random
+import secrets
 from typing import Optional
 from dataclasses import dataclass
 
@@ -20,7 +20,7 @@ class TeamRepository:
 
     async def create(self, data: Team) -> dict:
         """Cria novo time com protocolo gerado automaticamente."""
-        protocol = random.randint(111111, 999999)
+        protocol = secrets.randbelow(100_000_000)
 
         query = """
             INSERT INTO teams (name, price, protocol, owner)
