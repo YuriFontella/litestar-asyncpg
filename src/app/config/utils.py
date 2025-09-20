@@ -6,7 +6,7 @@ from typing import TypeVar
 T = TypeVar("T")
 
 
-def get_env(key: str, default: T) -> T:
+def get_env(key: str, default: T = None) -> T:
     """Get environment variable with default value.
 
     Args:

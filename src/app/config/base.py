@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import os
-import secrets
-import binascii
 from dataclasses import dataclass, field
 from functools import lru_cache
 
@@ -38,9 +36,7 @@ class AppSettings:
     DEBUG: bool = field(default_factory=lambda: get_env("LITESTAR_DEBUG", False))
     """Run `Litestar` with `debug=True`."""
     SECRET_KEY: str = field(
-        default_factory=lambda: get_env(
-            "SECRET_KEY", binascii.hexlify(os.urandom(32)).decode(encoding="utf-8")
-        ),
+        default_factory=lambda: get_env("SECRET_KEY"),
     )
     """Application secret key."""
     ALLOWED_CORS_ORIGINS: list[str] = field(
@@ -59,9 +55,7 @@ class AppSettings:
         default_factory=lambda: get_env("JWT_ALGORITHM", "HS256")
     )
     """JWT signing / encryption algorithm (e.g. HS256)."""
-    SESSION_SALT: str = field(
-        default_factory=lambda: get_env("SESSION_SALT", secrets.token_hex(16))
-    )
+    SESSION_SALT: str = field(default_factory=lambda: get_env("SESSION_SALT"))
     """Static salt used for session token PBKDF2 derivation (change in production)."""
     DEFAULT_PLAYER_LANGUAGE: str = field(
         default_factory=lambda: get_env("DEFAULT_PLAYER_LANGUAGE", "pt-br")
