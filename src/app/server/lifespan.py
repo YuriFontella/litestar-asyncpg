@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
 from litestar import Litestar
 from src.app.config import app as config
-
-MIGRATIONS_DIR = Path(__file__).resolve().parent.parent / "db" / "migrations"
+from src.app.config.constants import MIGRATIONS_DIR
 
 
 async def on_startup(app: Litestar) -> None:
