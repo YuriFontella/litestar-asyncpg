@@ -4,11 +4,12 @@ from pathlib import Path
 from litestar import Litestar
 from src.app.config import app as config
 
+MIGRATIONS_DIR = Path(__file__).resolve().parent.parent / "db" / "migrations"
+
 
 async def on_startup(app: Litestar) -> None:
     pool = config.asyncpg.provide_pool(app.state)
-    migrations_dir = Path(__file__).resolve().parent.parent / "db" / "migrations"
-    migration_files = sorted(migrations_dir.glob("*.sql"))
+    migration_files = sorted(MIGRATIONS_DIR.glob("*.sql"))
     async with pool.acquire() as conn:
         # Ensure the migrations table exists
         await conn.execute(

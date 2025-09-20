@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Iterable
 from dataclasses import dataclass
-from functools import cached_property
 
 from asyncpg import Connection
 
@@ -25,13 +24,9 @@ class TeamsService:
 
     connection: Connection
 
-    @cached_property
-    def team_repository(self) -> TeamRepository:
-        return TeamRepository(self.connection)
-
-    @cached_property
-    def player_repository(self) -> PlayerRepository:
-        return PlayerRepository(self.connection)
+    def __post_init__(self):
+        self.team_repository = TeamRepository(self.connection)
+        self.player_repository = PlayerRepository(self.connection)
 
     async def create_with_players(
         self, data: TeamWithPlayersCreate, owner_name: str | None = None

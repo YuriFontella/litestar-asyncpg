@@ -55,7 +55,7 @@ class UsersService:
         - bcrypt.gensalt(10): fator de custo 10 (pode aumentar em produção se performance permitir).
         - Senha nunca deve ser armazenada em texto claro.
         """
-        # Hash da senha (bcrypt inclui salt interno)
+        # Hash password (bcrypt includes internal salt)
         hashed_password = bcrypt.hashpw(
             data.password.encode("utf-8"), bcrypt.gensalt(10)
         )
