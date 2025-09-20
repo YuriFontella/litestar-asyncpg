@@ -57,7 +57,7 @@ class UsersService:
         """
         # Hash password (bcrypt includes internal salt)
         hashed_password = bcrypt.hashpw(
-            data.password.encode("utf-8"), bcrypt.gensalt(10)
+            data.password.encode("utf-8"), bcrypt.gensalt(12)
         )
 
         # Monta objeto de domínio com senha hasheada

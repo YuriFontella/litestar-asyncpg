@@ -27,10 +27,11 @@ async def on_startup(app: Litestar) -> None:
                 continue
             with sql_path.open("r", encoding="utf-8") as file:
                 sql = file.read()
-                await conn.execute(sql)
-                await conn.execute(
-                    "INSERT INTO _migrations (filename) VALUES ($1);", sql_path.name
-                )
+                async with conn.transaction():
+                    await conn.execute(sql)
+                    await conn.execute(
+                        "INSERT INTO _migrations (filename) VALUES ($1);", sql_path.name
+                    )
 
 
 async def on_shutdown(app: Litestar) -> None:

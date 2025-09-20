@@ -34,10 +34,10 @@ class SessionRepository:
         """Revoke session by ID."""
         query = "UPDATE sessions SET revoked = true WHERE id = $1"
         result = await self.connection.execute(query, session_id)
-        return "UPDATE 1" in result
+        return result == "UPDATE 1"
 
     async def revoke_by_user(self, user_id: int) -> bool:
         """Revoke all sessions for a user."""
         query = "UPDATE sessions SET revoked = true WHERE user_id = $1"
         result = await self.connection.execute(query, user_id)
-        return "UPDATE" in result
+        return len(result) > 0
