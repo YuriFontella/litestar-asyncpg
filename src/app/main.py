@@ -20,7 +20,7 @@ def run_cli() -> NoReturn:
         from litestar.cli.main import litestar_group
 
         sys.exit(litestar_group())
-    except ImportError as exc:  # pragma: no cover - environment specific
+    except ImportError as exc:
         print(
             "Could not load required libraries. Please check your installation and virtual environment.",
         )

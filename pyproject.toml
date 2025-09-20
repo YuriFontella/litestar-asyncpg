@@ -26,8 +26,7 @@ ruff = "^0.12.12"
 pre-commit = "^4.3.0"
 
 [tool.poetry.scripts]
-app = "src.app.__main__:run_cli"
+app = "src.app.main:run_cli"
 
 [build-system]
-requires = ["poetry-core>=2.2.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
