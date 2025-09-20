@@ -41,11 +41,7 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
                 query = """
                     select u.id, u.name, u.email, u.role, u.status from users u
                     join sessions s on u.id = s.user_id
-                    where
-                        u.id = $1 and
-                        s.access_token = $2 and
-                        s.revoked = false and
-                        u.status = true
+                    where u.id = $1 and s.access_token = $2 and s.revoked = false and u.status = true
                 """
                 user = await conn.fetchrow(query, user_id, access_token.hex())
 

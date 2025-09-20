@@ -23,10 +23,6 @@ csrf = CSRFConfig(
     cookie_secure=settings.app.CSRF_COOKIE_SECURE,
     safe_methods={
         "GET",
-        "POST",
-        "DELETE",
-        "PUT",
-        "PATCH",
         "OPTIONS",
     },
 )
