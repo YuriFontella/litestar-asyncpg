@@ -11,6 +11,8 @@ from litestar.middleware import AbstractAuthenticationMiddleware, Authentication
 from src.app.config.base import get_settings
 from src.app.config import app as config
 
+settings = get_settings()
+
 
 class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
     # Middleware de autenticação baseado em JWT + sessão persistida no banco.
@@ -22,7 +24,6 @@ class AuthenticationMiddleware(AbstractAuthenticationMiddleware):
             if not token:
                 raise NotAuthorizedException()
 
-            settings = get_settings()
             auth = decode(
                 jwt=token,
                 key=settings.app.SECRET_KEY,
