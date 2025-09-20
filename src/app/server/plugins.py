@@ -8,12 +8,12 @@ from src.app.config import app as config
 asyncpg_config = config.asyncpg
 asyncpg = AsyncpgPlugin(config=asyncpg_config)
 structlog = StructlogPlugin(config=config.log)
+channels = ChannelsPlugin(
+    backend=MemoryChannelsBackend(),
+    channels=["notifications"],
+    create_ws_route_handlers=True,
+)
 
 
 def get_plugins() -> list:
-    channels = ChannelsPlugin(
-        backend=MemoryChannelsBackend(),
-        channels=["notifications"],
-        create_ws_route_handlers=True,
-    )
     return [structlog, asyncpg, channels]
