@@ -1,6 +1,6 @@
 ## Litestar Asyncpg Plugin
 
-Usage:
+### Features
 
 * Routing
 * Channels (websocket)
@@ -14,44 +14,75 @@ Usage:
 
 ## Setup
 
-#### .env
+### 1. Pré‑requisitos
 
-```
-KEY=secret
-DSN=postgresql://user:password@host:port/db
-```
+* Python 3.13+
+* [Poetry](https://python-poetry.org/) (gerenciador de dependências)
 
-#### Install Dependencies
+Instalação do Poetry (caso não tenha):
 
 ```bash
-pip install -r requirements.txt
+curl -sSL https://install.python-poetry.org | python3 -
+# depois garanta que o poetry esteja no PATH conforme instruções impressas
 ```
 
-#### Database
+### 2. Variáveis de ambiente (.env)
+
+Crie um arquivo `.env` na raiz:
+
+```
+SECRET_KEY=secret
+DATABASE_DSN=postgresql://user:password@host:port/db
+```
+
+### 3. Instalar dependências
 
 ```bash
-create database db 
+poetry install
 ```
 
-### Run Server
-
-
-```bash
-litestar run
-```
+Opcional: ativar o shell virtual
 
 ```bash
-litestar run -r -P -d -p 9000 -H 0.0.0.0
-```
-```bash
-litestar run --wc 4
-```
-```bash
-litestar run -h
+poetry shell
 ```
 
-### OpenAPI
+### 4. Banco de dados
+
+Crie o database (ajuste o nome conforme seu DSN):
 
 ```bash
-localhost:port/schema/redoc
+createdb db
 ```
+
+Se necessário aplique migrações SQL manuais (ex.: conteúdo em `src/app/db/migrations/`).
+
+### 5. Executar o servidor
+
+O script `app` definido em `pyproject.toml` encapsula o CLI do Litestar.
+
+Comando básico:
+
+```bash
+poetry run app run
+```
+
+Exemplos com opções:
+
+```bash
+poetry run app run -r -P -d -p 9000 -H 0.0.0.0
+poetry run app run --wc 4
+poetry run app run -h
+```
+
+(O mesmo que usar diretamente `litestar run`, porém garantindo o ambiente configurado pelo script.)
+
+### 6. OpenAPI / ReDoc
+
+Acesse em:
+
+```
+http://localhost:PORT/schema/redoc
+```
+
+Substitua `PORT` pela porta utilizada (padrão 8000 se não especificado).
