@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import msgspec
 from litestar import Controller, Request, get, post
 from litestar.di import Provide
 from litestar.types import Scope
@@ -59,20 +60,41 @@ class TeamController(Controller):
                 owner_name=user["name"] if user else None,
             )
 
+            # Invalida cache após criar novo time
+            store = request.app.stores.get("teams_cache")
+            await store.delete("teams_list")
+
             request.app.emit("messages", "Seu time foi criado com sucesso!")
             return team
 
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-    @get(path=urls.TEAMS_PLAYERS, cache=4)
+    @get(path=urls.TEAMS_PLAYERS)
     async def list_teams_with_players(
-        self, teams_service: TeamsService
+        self, teams_service: TeamsService, request: Request
     ) -> list[TeamWithPlayersRead]:
         """Lista todos os times com seus jogadores."""
-        return await teams_service.list_with_players()
+        # Cache simples com store usando msgspec to_builtins/convert
+        store = request.app.stores.get("teams_cache")
+        cache_key = "teams_list"
 
-    @get(path="/{team_id:int}")
+        # Verifica se existe no cache
+        cached_data = await store.get(cache_key)
+        if cached_data:
+            try:
+                return msgspec.convert(cached_data, type=list[TeamWithPlayersRead])
+            except (msgspec.ValidationError, msgspec.DecodeError):
+                # Se falhar na conversão, remove do cache e continua
+                await store.delete(cache_key)
+
+        # Busca do banco e salva no cache
+        teams = await teams_service.list_with_players()
+        await store.set(cache_key, msgspec.to_builtins(teams), expires_in=60)
+
+        return teams
+
+    @get(path="/{team_id:int}", cache=4)
     async def get_team(self, team_id: int, teams_service: TeamsService) -> TeamRead:
         """Obtém time por ID."""
         team = await teams_service.get_team_by_id(team_id)
@@ -80,7 +102,7 @@ class TeamController(Controller):
             raise HTTPException(status_code=404, detail="Time não encontrado")
         return team
 
-    @get(path="/{team_id:int}/players")
+    @get(path="/{team_id:int}/players", cache=4)
     async def get_team_with_players(
         self, team_id: int, teams_service: TeamsService
     ) -> TeamWithPlayersRead:

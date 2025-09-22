@@ -5,6 +5,7 @@ from litestar.exceptions import HTTPException
 from litestar.plugins import InitPluginProtocol
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.static_files import create_static_files_router
+from litestar.stores.registry import StoreRegistry
 
 from src.app.lib.exceptions import app_exception_handler, internal_server_error_handler
 from src.app.lib.deps import provide_current_user
@@ -16,6 +17,7 @@ from src.app.config.app import (
 )
 from src.app.server.lifespan import on_shutdown, on_startup
 from src.app.server.middleware import factory
+from src.app.server.stores import default_store
 from src.app.server.plugins import get_plugins
 from src.app.config.base import get_settings
 
@@ -67,6 +69,9 @@ class ApplicationCore(InitPluginProtocol):
                 "current_user": Provide(provide_current_user, sync_to_thread=False),
             }
         )
+
+        # Registro de stores (ex: cache, sessão, etc.)
+        app_config.stores = StoreRegistry(default_factory=default_store)
 
         # Eventos de ciclo de vida da aplicação
         app_config.on_startup.extend([on_startup])
