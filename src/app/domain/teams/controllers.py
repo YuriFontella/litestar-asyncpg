@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Dict
+
 import msgspec
 from litestar import Controller, Request, get, post
 from litestar.di import Provide
@@ -104,9 +106,10 @@ class TeamController(Controller):
 
     @get(path="/{team_id:int}/players", cache=4)
     async def get_team_with_players(
-        self, team_id: int, teams_service: TeamsService
+        self, team_id: int, teams_service: TeamsService, current_user: Dict
     ) -> TeamWithPlayersRead:
         """Obtém time e jogadores por ID."""
+        print(current_user["email"] if current_user else "Anônimo")
         team = await teams_service.get_team_with_players(team_id)
         if not team:
             raise HTTPException(status_code=404, detail="Time não encontrado")
