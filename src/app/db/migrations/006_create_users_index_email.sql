@@ -1,2 +1,1 @@
-create index if not exists users_index_email on users (email asc);
-
+CREATE INDEX IF NOT EXISTS users_index_email ON users (email ASC);

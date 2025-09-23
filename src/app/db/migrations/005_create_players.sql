@@ -1,10 +1,9 @@
-create table if not exists players (
-  id serial primary key,
-  name varchar not null,
-  language varchar(255) default 'pt-br'::character varying,
-  uuid uuid not null unique default uuid_generate_v4(),
-  status bool default false,
-  team_id integer not null,
-  constraint fk_team_id foreign key (team_id) references teams (id) on delete cascade
+CREATE TABLE IF NOT EXISTS players (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR NOT NULL,
+  language VARCHAR(255) DEFAULT 'pt-br'::CHARACTER VARYING,
+  uuid UUID NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+  status BOOL DEFAULT FALSE,
+  team_id INTEGER NOT NULL,
+  CONSTRAINT fk_team_id FOREIGN KEY (team_id) REFERENCES teams (id) ON DELETE CASCADE
 );
-

@@ -12,7 +12,7 @@ from asyncpg import Connection
 from src.app.config.base import get_settings, Settings
 from src.app.domain.users.repositories.user import UserRepository
 from src.app.domain.users.repositories.session import SessionRepository
-from src.app.domain.users.schemas import Token, UserCreate, UserLogin
+from src.app.domain.users.schemas import Token, UserCreate, UserLogin, User
 
 
 @dataclass
@@ -61,8 +61,6 @@ class UsersService:
         )
 
         # Monta objeto de domínio com senha hasheada
-        from src.app.domain.users.schemas import User
-
         user_data = User(
             name=data.name,
             email=data.email,

@@ -1,11 +1,10 @@
-create table if not exists sessions (
-    id serial primary key,
-    access_token text not null,
-    user_agent text,
-    ip varchar,
-    revoked bool default false,
-    user_id integer not null,
-    constraint fk_user_id foreign key (user_id) references users (id) on delete cascade,
-    date timestamp with time zone not null default current_timestamp
+CREATE TABLE IF NOT EXISTS sessions (
+    id SERIAL PRIMARY KEY,
+    access_token TEXT NOT NULL,
+    user_agent TEXT,
+    ip VARCHAR,
+    revoked BOOL DEFAULT FALSE,
+    user_id INTEGER NOT NULL,
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-

@@ -1,9 +1,8 @@
-create table if not exists users (
-  id serial primary key,
-  name varchar not null,
-  email varchar not null,
-  password varchar not null,
-  role varchar,
-  status bool default true
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR NOT NULL,
+  email VARCHAR NOT NULL,
+  password VARCHAR NOT NULL,
+  role VARCHAR,
+  status BOOL DEFAULT TRUE
 );
-

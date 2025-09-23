@@ -1,9 +1,8 @@
-create table if not exists teams (
-  id serial primary key,
-  name varchar not null unique,
-  price decimal(15, 2) not null,
-  owner varchar not null,
-  protocol integer not null unique,
-  date timestamp with time zone not null default current_timestamp
+CREATE TABLE IF NOT EXISTS teams (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR NOT NULL UNIQUE,
+  price DECIMAL(15, 2) NOT NULL,
+  owner VARCHAR NOT NULL,
+  protocol INTEGER NOT NULL UNIQUE,
+  date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
