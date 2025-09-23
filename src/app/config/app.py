@@ -9,6 +9,7 @@ from litestar.plugins.structlog import StructlogConfig
 from litestar.config.compression import CompressionConfig
 from litestar.config.cors import CORSConfig
 from litestar.config.csrf import CSRFConfig
+from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 from litestar.middleware.rate_limit import RateLimitConfig
 from litestar_asyncpg import AsyncpgConfig, PoolConfig
@@ -40,6 +41,8 @@ cors = CORSConfig(
     allow_headers=["Origin", "Content-Type", "X-CSRFToken", "X-Access-Token"],
     allow_credentials=True,
 )
+
+allowed_hosts = AllowedHostsConfig(allowed_hosts=["127.0.0.1", "localhost"])
 
 compression = CompressionConfig(backend="gzip", gzip_compress_level=9)
 

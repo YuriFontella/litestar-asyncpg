@@ -13,6 +13,7 @@ from src.app.config.app import (
     compression as compression_config,
     cors as cors_config,
     csrf as csrf_config,
+    allowed_hosts,
     rate_limit_config,
 )
 from src.app.server.lifespan import on_shutdown, on_startup
@@ -52,9 +53,10 @@ class ApplicationCore(InitPluginProtocol):
         # Registra plugins (ex: banco, canais, etc.)
         app_config.plugins.extend(get_plugins())
 
-        # Configuração de segurança e CORS / compressão / CSRF
+        # Configuração de segurança e CORS / compressão / CSRF / Allowed Hosts
         app_config.cors_config = cors_config
         app_config.csrf_config = csrf_config
+        app_config.allowed_hosts = allowed_hosts
         app_config.compression_config = compression_config
 
         # Middleware globais (ordem importa: autenticação, rate limit, etc.)
