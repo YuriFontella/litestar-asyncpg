@@ -3,12 +3,14 @@ from __future__ import annotations
 from typing import Dict
 
 import msgspec
-from litestar import Controller, Request, get, post
+from litestar import Controller, get, post
 from litestar.di import Provide
 from litestar.types import Scope
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.exceptions import HTTPException
+from litestar.stores.registry import StoreRegistry
 
+from src.app.lib.deps import EventEmitter
 from src.app.domain.teams.guards import requires_team_admin
 from src.app.domain.teams.schemas import (
     TeamWithPlayersCreate,
@@ -44,8 +46,9 @@ class TeamController(Controller):
         self,
         data: TeamWithPlayersCreate,
         scope: Scope,
-        request: Request,
         teams_service: TeamsService,
+        stores: StoreRegistry,
+        emit: EventEmitter,
     ) -> TeamRead:
         """Cria novo time com jogadores em operação transacional."""
         user = scope.get("user")
@@ -63,10 +66,10 @@ class TeamController(Controller):
             )
 
             # Invalida cache após criar novo time
-            store = request.app.stores.get("teams_cache")
+            store = stores.get("teams_cache")
             await store.delete("teams_list")
 
-            request.app.emit("messages", "Seu time foi criado com sucesso!")
+            emit("messages", "Seu time foi criado com sucesso!")
             return team
 
         except ValueError as e:
@@ -74,11 +77,11 @@ class TeamController(Controller):
 
     @get(path=urls.TEAMS_PLAYERS)
     async def list_teams_with_players(
-        self, teams_service: TeamsService, request: Request
+        self, teams_service: TeamsService, stores: StoreRegistry
     ) -> list[TeamWithPlayersRead]:
         """Lista todos os times com seus jogadores."""
         # Cache simples com store usando msgspec to_builtins/convert
-        store = request.app.stores.get("teams_cache")
+        store = stores.get("teams_cache")
         cache_key = "teams_list"
 
         # Verifica se existe no cache

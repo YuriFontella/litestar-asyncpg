@@ -8,7 +8,7 @@ from litestar.static_files import create_static_files_router
 from litestar.stores.registry import StoreRegistry
 
 from src.app.lib.exceptions import app_exception_handler, internal_server_error_handler
-from src.app.lib.deps import provide_current_user
+from src.app.lib.deps import provide_current_user, provide_stores, provide_emit
 from src.app.config.app import (
     compression as compression_config,
     cors as cors_config,
@@ -67,6 +67,8 @@ class ApplicationCore(InitPluginProtocol):
         app_config.dependencies.update(
             {
                 "current_user": Provide(provide_current_user, sync_to_thread=False),
+                "stores": Provide(provide_stores, sync_to_thread=False),
+                "emit": Provide(provide_emit, sync_to_thread=False),
             }
         )
 
