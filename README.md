@@ -6,6 +6,7 @@
 * Channels (websocket)
 * Events
 * Middlewares (cors, csrf, rate limit)
+* Allowed Hosts
 * Stores
 * Security / Guards (authentication)
 * Caching
@@ -28,17 +29,22 @@ curl -sSL https://install.python-poetry.org | python3 -
 
 ### 2. Variáveis de ambiente (.env)
 
-Crie um arquivo `.env` na raiz:
+Copie o arquivo `.env.example` para `.env` e altere os valores conforme necessário:
 
-```
-SECRET_KEY=secret
-DATABASE_DSN=postgresql://user:password@host:port/db
+```bash
+cp .env.example .env
 ```
 
 ### 3. Instalar dependências
 
 ```bash
 poetry install
+```
+
+Configure os hooks de pre-commit:
+
+```bash
+pre-commit install --config pre-commit.yaml
 ```
 
 Opcional: ativar o shell virtual
