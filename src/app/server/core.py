@@ -24,10 +24,10 @@ from src.app.config.base import get_settings
 
 
 class ApplicationCore(InitPluginProtocol):
-    """Plugin de configuração central da aplicação.
+    """Central application configuration plugin.
 
-    Responsável por registrar handlers de rota, plugins, middlewares, listeners (eventos),
-    dependências, ciclo de vida (startup/shutdown) e tratadores de exceção.
+    Responsible for registering route handlers, plugins, middleware, listeners (events),
+    dependencies, lifecycle (startup/shutdown) and exception handlers.
     """
 
     def on_app_init(self, app_config):
@@ -37,8 +37,8 @@ class ApplicationCore(InitPluginProtocol):
 
         from src.app.domain.teams.signals import on_message
 
-        # Registra os controllers (handlers de rota) e rota de arquivos estáticos
-        # IMPORTANTE: a ordem aqui pode afetar resolução de conflitos de rota em alguns frameworks.
+        # Register controllers (route handlers) and static files route
+        # IMPORTANT: order here may affect route conflict resolution in some frameworks.
         app_config.route_handlers.extend(
             [
                 RootController,
@@ -50,22 +50,22 @@ class ApplicationCore(InitPluginProtocol):
             ]
         )
 
-        # Registra plugins (ex: banco, canais, etc.)
+        # Register plugins (e.g.: database, channels, etc.)
         app_config.plugins.extend(get_plugins())
 
-        # Configuração de segurança e CORS / compressão / CSRF / Allowed Hosts
+        # Security configuration and CORS / compression / CSRF / Allowed Hosts
         app_config.cors_config = cors_config
         app_config.csrf_config = csrf_config
         app_config.allowed_hosts = allowed_hosts
         app_config.compression_config = compression_config
 
-        # Middleware globais (ordem importa: autenticação, rate limit, etc.)
+        # Global middleware (order matters: authentication, rate limit, etc.)
         app_config.middleware.extend([factory, rate_limit_config.middleware])
 
-        # Listeners / sinais (ex: canal de mensagens)
+        # Listeners / signals (e.g.: message channel)
         app_config.listeners.extend([on_message])
 
-        # Injeção de dependências disponíveis para handlers
+        # Dependency injection available for handlers
         app_config.dependencies.update(
             {
                 "current_user": Provide(provide_current_user, sync_to_thread=False),
@@ -74,20 +74,20 @@ class ApplicationCore(InitPluginProtocol):
             }
         )
 
-        # Registro de stores (ex: cache, sessão, etc.)
+        # Store registry (e.g.: cache, session, etc.)
         app_config.stores = StoreRegistry(default_factory=default_store)
 
-        # Eventos de ciclo de vida da aplicação
+        # Application lifecycle events
         app_config.on_startup.extend([on_startup])
         app_config.on_shutdown.extend([on_shutdown])
 
-        # Handlers de exceções customizados
+        # Custom exception handlers
         app_config.exception_handlers = {
             HTTPException: app_exception_handler,
             HTTP_500_INTERNAL_SERVER_ERROR: internal_server_error_handler,
         }
 
-        # Modo debug: ativa PDB em exceções quando configurado
+        # Debug mode: activates PDB on exceptions when configured
         settings = get_settings()
         app_config.pdb_on_exception = bool(settings.app.DEBUG)
 

@@ -15,65 +15,65 @@
 
 ## Setup
 
-### 1. Pré‑requisitos
+### 1. Prerequisites
 
 * Python 3.13+
-* [Poetry](https://python-poetry.org/) (gerenciador de dependências)
+* [Poetry](https://python-poetry.org/) (dependency manager)
 
-Instalação do Poetry (caso não tenha):
+Poetry installation (if you don't have it):
 
 ```bash
 curl -sSL https://install.python-poetry.org | python3 -
-# depois garanta que o poetry esteja no PATH conforme instruções impressas
+# then make sure poetry is in PATH according to printed instructions
 ```
 
-### 2. Variáveis de ambiente (.env)
+### 2. Environment variables (.env)
 
-Copie o arquivo `.env.example` para `.env` e altere os valores conforme necessário:
+Copy the `.env.example` file to `.env` and change the values as needed:
 
 ```bash
 cp .env.example .env
 ```
 
-### 3. Instalar dependências
+### 3. Install dependencies
 
 ```bash
 poetry install
 ```
 
-Configure os hooks de pre-commit:
+Configure pre-commit hooks:
 
 ```bash
 pre-commit install --config pre-commit.yaml
 ```
 
-Opcional: ativar o shell virtual
+Optional: activate virtual shell
 
 ```bash
 poetry shell
 ```
 
-### 4. Banco de dados
+### 4. Database
 
-Crie o database (ajuste o nome conforme seu DSN):
+Create the database (adjust the name according to your DSN):
 
 ```bash
 createdb db
 ```
 
-Se necessário aplique migrações SQL manuais (ex.: conteúdo em `src/app/db/migrations/`).
+If necessary apply manual SQL migrations (e.g.: content in `src/app/db/migrations/`).
 
-### 5. Executar o servidor
+### 5. Run the server
 
-O script `app` definido em `pyproject.toml` encapsula o CLI do Litestar.
+The `app` script defined in `pyproject.toml` wraps the Litestar CLI.
 
-Comando básico:
+Basic command:
 
 ```bash
 poetry run app run
 ```
 
-Exemplos com opções:
+Examples with options:
 
 ```bash
 poetry run app run -r -P -d -p 9000 -H 0.0.0.0
@@ -81,14 +81,14 @@ poetry run app run --wc 4
 poetry run app run -h
 ```
 
-(O mesmo que usar diretamente `litestar run`, porém garantindo o ambiente configurado pelo script.)
+(Same as using `litestar run` directly, but ensuring the environment configured by the script.)
 
 ### 6. OpenAPI / ReDoc
 
-Acesse em:
+Access at:
 
 ```
 http://localhost:PORT/schema/redoc
 ```
 
-Substitua `PORT` pela porta utilizada (padrão 8000 se não especificado).
+Replace `PORT` with the port used (default 8000 if not specified).

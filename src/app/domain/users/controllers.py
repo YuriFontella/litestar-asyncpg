@@ -14,7 +14,7 @@ from src.app.domain.users.services import UsersService
 
 
 class UserController(Controller):
-    """Controller de Usuários com operações de criação, autenticação e consulta."""
+    """User Controller with creation, authentication and query operations."""
 
     path = "/users"
     tags = ["Users"]
@@ -26,21 +26,21 @@ class UserController(Controller):
     async def create_user(
         self, data: UserCreate, channels: ChannelsPlugin, users_service: UsersService
     ) -> UserRead:
-        """Cria uma nova conta de usuário."""
-        # Valida dados (msgspec garante tipos corretos)
+        """Creates a new user account."""
+        # Validate data (msgspec ensures correct types)
         payload = msgspec.to_builtins(data)
         validated_data = msgspec.convert(payload, type=UserCreate)
 
-        # Verifica se email já existe
+        # Check if email already exists
         if await users_service.email_exists(validated_data.email):
             raise HTTPException(
-                detail="Já existe um cadastro com esse e-mail", status_code=400
+                detail="An account with this email already exists", status_code=400
             )
 
-        # Cria usuário
+        # Create user
         user_record = await users_service.create(validated_data)
         if user_record:
-            channels.publish("Usuário criado com sucesso!", channels=["notifications"])
+            channels.publish("User created successfully!", channels=["notifications"])
 
         return UserRead(
             id=user_record["id"],
@@ -54,7 +54,7 @@ class UserController(Controller):
     async def authenticate_user(
         self, data: UserLogin, request: Request, users_service: UsersService
     ) -> Token:
-        """Autentica usuário e retorna token JWT."""
+        """Authenticates user and returns JWT token."""
         try:
             user_agent = request.headers.get("user-agent")
             ip = request.client.host if request.client else None
@@ -64,10 +64,10 @@ class UserController(Controller):
 
     @get(path="/{user_id:int}")
     async def get_user(self, user_id: int, users_service: UsersService) -> UserRead:
-        """Obtém usuário por ID."""
+        """Gets user by ID."""
         user_record = await users_service.get_by_id(user_id)
         if not user_record:
-            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+            raise HTTPException(status_code=404, detail="User not found")
 
         return UserRead(
             id=user_record["id"],

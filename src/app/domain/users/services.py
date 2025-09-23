@@ -17,13 +17,13 @@ from src.app.domain.users.schemas import Token, UserCreate, UserLogin, User
 
 @dataclass
 class UsersService:
-    """Camada de serviço para operações de usuário usando repositórios AsyncPG.
+    """Service layer for user operations using AsyncPG repositories.
 
-    Responsabilidades principais:
-    - Orquestrar criação e autenticação de usuários.
-    - Gerar e validar sessões (persistidas no banco) + JWT de transporte.
-    - Aplicar hashing de senhas (bcrypt) e derivação de token de sessão (PBKDF2-HMAC).
-    - Encapsular regras de negócio evitando vazamento de lógica para controllers.
+    Main responsibilities:
+    - Orchestrate user creation and authentication.
+    - Generate and validate sessions (persisted in database) + transport JWT.
+    - Apply password hashing (bcrypt) and session token derivation (PBKDF2-HMAC).
+    - Encapsulate business rules avoiding logic leakage to controllers.
     """
 
     connection: Connection
@@ -37,30 +37,30 @@ class UsersService:
         self.settings = get_settings()
 
     async def get_by_email(self, email: str) -> Optional[dict]:
-        """Obtém usuário pelo e-mail."""
+        """Gets user by email."""
         return await self.user_repository.get_by_email(email)
 
     async def get_by_id(self, user_id: int) -> Optional[dict]:
-        """Obtém usuário pelo ID."""
+        """Gets user by ID."""
         return await self.user_repository.get_by_id(user_id)
 
     async def email_exists(self, email: str) -> bool:
-        """Verifica se e-mail já está cadastrado."""
+        """Checks if email is already registered."""
         return await self.user_repository.email_exists(email)
 
     async def create(self, data: UserCreate) -> dict:
-        """Cria novo usuário com senha hasheada.
+        """Creates new user with hashed password.
 
-        Notas de segurança:
-        - bcrypt.gensalt(10): fator de custo 10 (pode aumentar em produção se performance permitir).
-        - Senha nunca deve ser armazenada em texto claro.
+        Security notes:
+        - bcrypt.gensalt(10): cost factor 10 (can increase in production if performance allows).
+        - Password should never be stored in plain text.
         """
         # Hash password (bcrypt includes internal salt)
         hashed_password = bcrypt.hashpw(
             data.password.encode("utf-8"), bcrypt.gensalt(12)
         )
 
-        # Monta objeto de domínio com senha hasheada
+        # Build domain object with hashed password
         user_data = User(
             name=data.name,
             email=data.email,
@@ -73,36 +73,36 @@ class UsersService:
     async def authenticate(
         self, data: UserLogin, user_agent: str | None, ip: str | None
     ) -> Token:
-        """Autentica usuário e cria sessão persistida.
+        """Authenticates user and creates persisted session.
 
-        Fluxo resumido:
-        1. Busca usuário ativo por e-mail.
-        2. Valida senha via bcrypt.
-        3. Gera token aleatório (não armazenado em claro) -> derivado com PBKDF2-HMAC.
-        4. Persiste hash do token (access_token) na tabela de sessões.
-        5. Retorna JWT contendo id + token simples (não derivado) que será re-hasheado no middleware.
+        Summary flow:
+        1. Find active user by email.
+        2. Validate password via bcrypt.
+        3. Generate random token (not stored in plain text) -> derived with PBKDF2-HMAC.
+        4. Persist token hash (access_token) in sessions table.
+        5. Return JWT containing id + simple token (not derived) that will be re-hashed in middleware.
         """
-        # Busca usuário ativo
+        # Find active user
         user_record = await self.user_repository.get_by_email(data.email)
         if not user_record or not user_record.get("status", False):
-            raise ValueError("Nenhum usuário encontrado")
+            raise ValueError("No user found")
 
-        # Verifica senha (comparação segura via bcrypt)
+        # Verify password (secure comparison via bcrypt)
         stored_password = user_record["password"].encode("utf-8")
         if not bcrypt.checkpw(data.password.encode("utf-8"), stored_password):
-            raise ValueError("A senha está incorreta")
+            raise ValueError("Password is incorrect")
 
-        # Gera dados da sessão
+        # Generate session data
         salt = self.settings.app.SESSION_SALT
         random_token = secrets.token_hex()
         user_id = user_record["id"]
 
-        # Deriva hash resistente para token de sessão (PBKDF2: aumenta custo de brute force)
+        # Derive resistant hash for session token (PBKDF2: increases brute force cost)
         access_token_hash = hashlib.pbkdf2_hmac(
             "sha256", random_token.encode(), salt.encode(), 1000
         )
 
-        # Persiste sessão (não guardar random_token original no banco)
+        # Persist session (don't store original random_token in database)
         session = await self.session_repository.create(
             access_token=access_token_hash.hex(),
             user_agent=user_agent,
@@ -111,9 +111,9 @@ class UsersService:
         )
 
         if not session:
-            raise ValueError("Algo deu errado ao criar a sessão")
+            raise ValueError("Something went wrong creating the session")
 
-        # Gera JWT de transporte com token bruto (será re-hasheado no middleware de autenticação)
+        # Generate transport JWT with raw token (will be re-hashed in authentication middleware)
         token = jwt.encode(
             {"id": user_id, "access_token": random_token},
             key=self.settings.app.SECRET_KEY,
@@ -123,13 +123,13 @@ class UsersService:
         return Token(token=token)
 
     async def revoke_session(self, session_id: int) -> bool:
-        """Revoga uma sessão específica."""
+        """Revokes a specific session."""
         return await self.session_repository.revoke(session_id)
 
     async def revoke_all_sessions(self, user_id: int) -> bool:
-        """Revoga todas as sessões ativas do usuário."""
+        """Revokes all active sessions for the user."""
         return await self.session_repository.revoke_by_user(user_id)
 
     async def verify_session(self, access_token: str) -> Optional[dict]:
-        """Verifica sessão pelo access token (hash)."""
+        """Verifies session by access token (hash)."""
         return await self.session_repository.get_by_token(access_token)

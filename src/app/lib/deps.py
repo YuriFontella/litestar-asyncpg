@@ -5,20 +5,20 @@ from typing import Dict, Callable, Any, TypeAlias
 from litestar import Request
 from litestar.stores.registry import StoreRegistry
 
-# Tipo específico para a função emit da aplicação
+# Specific type for the application's emit function
 EventEmitter: TypeAlias = Callable[[str, Any], None]
 
 
 def provide_current_user(request: Request) -> Dict | None:
-    """Fornece o usuário autenticado atual extraído do objeto de autenticação."""
+    """Provides the current authenticated user extracted from the authentication object."""
     return request.user if hasattr(request, "user") else None
 
 
 def provide_stores(request: Request) -> StoreRegistry:
-    """Fornece o registry de stores da aplicação."""
+    """Provides the application's store registry."""
     return request.app.stores
 
 
 def provide_emit(request: Request) -> EventEmitter:
-    """Fornece a função emit da aplicação para emitir eventos."""
+    """Provides the application's emit function for emitting events."""
     return request.app.emit

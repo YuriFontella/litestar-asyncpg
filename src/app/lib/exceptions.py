@@ -3,9 +3,9 @@ from litestar.exceptions import HTTPException
 
 
 def app_exception_handler(request: Request, exc: HTTPException) -> Response:
-    """Handler genérico para HTTPException.
+    """Generic handler for HTTPException.
 
-    Retorna payload JSON padronizado.
+    Returns standardized JSON payload.
     """
     return Response(
         content={
@@ -19,5 +19,5 @@ def app_exception_handler(request: Request, exc: HTTPException) -> Response:
 
 
 def internal_server_error_handler(_: Request, exc: Exception) -> Response:
-    """Handler para erros não tratados (500)."""
+    """Handler for unhandled errors (500)."""
     return Response(media_type=MediaType.TEXT, content=str(exc), status_code=500)

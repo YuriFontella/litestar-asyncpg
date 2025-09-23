@@ -11,15 +11,15 @@ from src.app.domain.teams.schemas import Team
 
 @dataclass
 class TeamRepository:
-    """Repositório para operações de Time usando AsyncPG.
+    """Repository for Team operations using AsyncPG.
 
-    Nota: responsável apenas por acesso a dados (sem regra de negócio complexa).
+    Note: responsible only for data access (no complex business logic).
     """
 
     connection: Connection
 
     async def create(self, data: Team) -> dict:
-        """Cria novo time com protocolo gerado automaticamente."""
+        """Creates new team with automatically generated protocol."""
         protocol = secrets.randbelow(100_000_000)
 
         query = """
@@ -34,29 +34,29 @@ class TeamRepository:
         )
 
     async def get_by_id(self, team_id: int) -> Optional[dict]:
-        """Obtém time por ID."""
+        """Gets team by ID."""
         query = "SELECT * FROM teams WHERE id = $1"
         return await self.connection.fetchrow(query, team_id)
 
     async def name_exists(self, name: str) -> bool:
-        """Verifica se nome de time já existe."""
+        """Checks if team name already exists."""
         query = "SELECT 1 FROM teams WHERE name = $1"
         return bool(await self.connection.fetchrow(query, name))
 
 
 @dataclass
 class PlayerRepository:
-    """Repositório para operações de Jogador usando AsyncPG."""
+    """Repository for Player operations using AsyncPG."""
 
     connection: Connection
 
     async def create_many(self, players_data: list[tuple[str, int]]) -> bool:
-        """Cria múltiplos jogadores para um time (bulk insert)."""
+        """Creates multiple players for a team (bulk insert)."""
         query = "INSERT INTO players (name, team_id) VALUES ($1, $2)"
         await self.connection.executemany(query, players_data)
         return True
 
     async def get_by_team(self, team_id: int) -> list[dict]:
-        """Obtém todos os jogadores de um time."""
+        """Gets all players from a team."""
         query = "SELECT * FROM players WHERE team_id = $1"
         return await self.connection.fetch(query, team_id)
